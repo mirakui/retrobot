@@ -1,5 +1,133 @@
 #!/usr/bin/env ruby
 require 'bundler/setup'
 Bundler.require
+require 'logger'
+require 'csv'
+require 'pathname'
+require 'time'
+require 'optparse'
 
+LOOP_INTERVAL = 3
+RETRY_INTERVAL = 3
+RETRY_COUNT = 5
 
+def init_twitter
+  Twitter.configure do |config|
+    config.consumer_key = ENV['CONSUMER_KEY']
+    config.consumer_secret = ENV['CONSUMER_SECRET']
+  end
+end
+
+def client
+  @client ||= begin
+                Twitter::Client.new(
+                  oauth_token: ENV['ACCESS_TOKEN'],
+                  oauth_token_secret: ENV['ACCESS_SECRET']
+                )
+              end
+end
+
+def logger
+  @logger ||= begin
+                l = Logger.new($stdout)
+                l.level = $debug ? Logger::DEBUG : Logger::INFO
+                l
+              end
+end
+
+def csv
+  @csv ||= begin
+           CSV.parse TWEETS_CSV_PATH.read
+         end
+end
+
+def init_csv
+  csv.slice! 0
+  last_index = nil
+  csv.each_with_index.each do |line, i|
+    time = Time.parse line[5]
+    if time < $retro_days.ago
+      last_index = i
+      break;
+    end
+  end
+  csv.slice! last_index..-1
+end
+
+def tweet_loop
+  logger.info 'start'
+  loop do
+    line = csv.last
+    if process_line(line)
+      csv.pop
+    end
+    sleep LOOP_INTERVAL
+    logger.debug '.'
+  end
+end
+
+def process_line(line)
+  tweet_id, in_reply_to_status_id, in_reply_to_user_id,
+  retweeted_status_id, retweeted_status_user_id,
+  timestamp, source, text, *expanded_urls = line
+
+  timestamp = Time.parse(timestamp).localtime
+  return false if timestamp > $retro_days.ago
+
+  if retweeted_status_id.present?
+    retweet retweeted_status_id.to_i, text
+    return true
+  end
+
+  tweet text.gsub('@', '')
+  true
+rescue Twitter::Error
+  logger.error "#{$!} (#{$!.class})\n  #{$@.join("\n  ")}"
+  true
+end
+
+def retweet(status_id, text=nil)
+  logger.info "retweet: #{status_id} \"#{text}\""
+  return if $dryrun
+  retryable(tries: RETRY_COUNT, sleep: RETRY_INTERVAL) do
+    client.retweet status_id
+  end
+end
+
+def tweet(text)
+  logger.info "tweet: #{text}"
+  return if $dryrun
+  retryable(tries: RETRY_COUNT, sleep: RETRY_INTERVAL) do
+    client.update text
+  end
+end
+
+def init_env
+  if $env
+    Dotenv.load File.read($env)
+  end
+end
+
+def init_options
+  $retro_days = 365.days
+  $tweets_csv_path = Pathname('../../tweets/tweets.csv').expand_path(__FILE__)
+
+  opt = OptionParser.new ARGV
+  opt.banner = "Usage: #{$0} [OPTIONS]"
+  opt.on('--debug') { $debug = true }
+  opt.on('--dryrun') { $dryrun = true }
+  opt.on('--env file') {|v| $env = v }
+  opt.on('--retro-days days') {|v| $retro_days = v.to_i.days }
+  opt.on('--tweets-csv path') {|v| $tweets_csv_path = Pathname v }
+  opt.parse!
+end
+
+def main
+  init_options
+  init_env
+  init_twitter
+  init_csv
+  tweet_loop
+end
+
+main
