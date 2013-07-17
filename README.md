@@ -1,5 +1,12 @@
 retrobot
 =============
+Retrobot is a twitter-bot engine which is working as [mirakui_retro](https://twitter.com/mirakui_retro)
+
+The bot working on retrobot tweets you tweeted 365 days ago!
+
+## Requirements
+- ruby > 1.9
+- [tweets.zip](https://blog.twitter.com/2012/your-twitter-archive)
 
 ## Installation
 
