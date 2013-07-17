@@ -108,13 +108,13 @@ def init_env
   if $env
     Dotenv.load $env
   else
-    Dotenv.load base_dir.join('.env').to_s
+    Dotenv.load BASE_DIR.join('.env').to_s
   end
 end
 
 def init_options
   $retro_days = 365.days
-  $tweets_csv_path = base_dir.join('/tweets/tweets.csv')
+  $tweets_csv_path = BASE_DIR.join('tweets/tweets.csv')
 
   opt = OptionParser.new ARGV
   opt.banner = "Usage: #{$0} [OPTIONS]"
