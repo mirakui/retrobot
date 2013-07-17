@@ -1,6 +1,6 @@
 retrobot
 =============
-Retrobot is a twitter-bot engine which is working as [mirakui_retro](https://twitter.com/mirakui_retro)
+Retrobot is a twitter-bot engine which is working as [mirakui_retro](https://twitter.com/mirakui_retro).
 
 The bot working on retrobot tweets you tweeted 365 days ago!
 
