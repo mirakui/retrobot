@@ -39,5 +39,4 @@ $ bin/retrobotctl [start|stop]
 ```
 
 ## License
-
-MIT License
+Copyright (c) 2013 Issei Naruta. Retrobot is released under the MIT License.
