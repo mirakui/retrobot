@@ -106,6 +106,8 @@ end
 def init_env
   if $env
     Dotenv.load File.read($env)
+  else
+    Dotenv.load
   end
 end
 
