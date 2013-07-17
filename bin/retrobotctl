@@ -5,7 +5,7 @@ require 'pathname'
 
 base_dir = Pathname('../../').expand_path(__FILE__)
 Daemons.run(
-  base_dir.join('bin/retro.rb'),
+  base_dir.join('bin/retrobot'),
   app_name: 'retrobot',
   dir_mode: :normal,
   dir: base_dir.join('tmp'),
