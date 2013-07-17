@@ -52,6 +52,7 @@ def init_csv
     end
   end
   csv.slice! last_index..-1
+  logger.info "Next update: \"#{csv.last[7]}\" at #{$retro_days.since(Time.parse(csv.last[5]))}"
 end
 
 def tweet_loop
