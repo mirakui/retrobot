@@ -2,3 +2,4 @@ tweets/
 *.env
 log/
 tmp/
+.bundle
