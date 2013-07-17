@@ -10,6 +10,7 @@ require 'optparse'
 LOOP_INTERVAL = 3
 RETRY_INTERVAL = 3
 RETRY_COUNT = 5
+BASE_DIR = Pathname('../../').expand_path(__FILE__)
 
 def init_twitter
   Twitter.configure do |config|
@@ -105,15 +106,15 @@ end
 
 def init_env
   if $env
-    Dotenv.load File.read($env)
+    Dotenv.load $env
   else
-    Dotenv.load
+    Dotenv.load base_dir.join('.env').to_s
   end
 end
 
 def init_options
   $retro_days = 365.days
-  $tweets_csv_path = Pathname('../../tweets/tweets.csv').expand_path(__FILE__)
+  $tweets_csv_path = base_dir.join('/tweets/tweets.csv')
 
   opt = OptionParser.new ARGV
   opt.banner = "Usage: #{$0} [OPTIONS]"
