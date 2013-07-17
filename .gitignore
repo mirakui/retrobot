@@ -1,2 +1,4 @@
 tweets/
 *.env
+log/
+tmp/
