@@ -29,13 +29,13 @@ $ vi .env
 ## Running retrobot
 
 ```
-$ bin/retro.rb
+$ bin/retrobot
 ```
 
 or you can run it as a daemon as follows:
 
 ```
-$ bin/retro_control.rb [start|stop]
+$ bin/retrobotctl [start|stop]
 ```
 
 ## License
