@@ -37,7 +37,7 @@ end
 
 def csv
   @csv ||= begin
-           CSV.parse TWEETS_CSV_PATH.read
+           CSV.parse $tweets_csv_path.read
          end
 end
 
