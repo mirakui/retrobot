@@ -46,14 +46,14 @@ def init_csv
   csv.slice! 0
   last_index = nil
   csv.each_with_index.each do |line, i|
-    time = Time.parse line[5]
+    time = Time.parse line[3]
     if time < $retro_days.ago
       last_index = i
       break;
     end
   end
   csv.slice! last_index..-1
-  logger.info "Next update: \"#{csv.last[7]}\" at #{$retro_days.since(Time.parse(csv.last[5]))}"
+  logger.info "Next update: \"#{csv.last[5]}\" at #{$retro_days.since(Time.parse(csv.last[3]))}"
 end
 
 def tweet_loop
@@ -70,8 +70,9 @@ end
 
 def process_line(line)
   tweet_id, in_reply_to_status_id, in_reply_to_user_id,
-  retweeted_status_id, retweeted_status_user_id,
-  timestamp, source, text, *expanded_urls = line
+  timestamp, source, text,
+  retweeted_status_id, retweeted_status_user_id, retweeted_status_timestamp,
+  *expanded_urls = line
 
   timestamp = Time.parse(timestamp).localtime
   return false if timestamp > $retro_days.ago
