@@ -6,6 +6,7 @@ require 'csv'
 require 'pathname'
 require 'time'
 require 'optparse'
+require 'cgi'
 
 LOOP_INTERVAL = 3
 RETRY_INTERVAL = 3
@@ -82,7 +83,7 @@ def process_line(line)
     return true
   end
 
-  tweet text.gsub('@', '')
+  tweet CGI.unescape_html(text.gsub('@', ''))
   true
 rescue Twitter::Error
   logger.error "#{$!} (#{$!.class})\n  #{$@.join("\n  ")}"
