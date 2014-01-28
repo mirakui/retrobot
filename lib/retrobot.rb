@@ -1,4 +1,5 @@
 require 'retrobot/version'
+require 'retrobot/config'
 
 require 'active_support/core_ext'
 require 'twitter'
@@ -12,23 +13,24 @@ require 'optparse'
 require 'cgi'
 
 class Retrobot
+  # FIXME: make them configurable
   LOOP_INTERVAL = 3
   RETRY_INTERVAL = 3
   RETRY_COUNT = 5
-  BASE_DIR = Pathname.new(ENV['BASE_DIR'] || Dir.pwd)
 
   def init_twitter
+    # FIXME: set in #client method
     Twitter.configure do |config|
-      config.consumer_key = ENV['CONSUMER_KEY']
-      config.consumer_secret = ENV['CONSUMER_SECRET']
+      config.consumer_key = @config.consumer_key
+      config.consumer_secret = @config.consumer_secret
     end
   end
 
   def client
     @client ||= begin
                   Twitter::Client.new(
-                    oauth_token: ENV['ACCESS_TOKEN'],
-                    oauth_token_secret: ENV['ACCESS_SECRET']
+                    oauth_token: @config.access_token,
+                    oauth_token_secret: @config.access_secret
                   )
                 end
   end
@@ -36,14 +38,15 @@ class Retrobot
   def logger
     @logger ||= begin
                   l = Logger.new($stdout)
-                  l.level = $debug ? Logger::DEBUG : Logger::INFO
+                  # FIXME: set at optparse
+                  l.level = @config.debug ? Logger::DEBUG : Logger::INFO
                   l
                 end
   end
 
   def csv
     @csv ||= begin
-             CSV.parse $tweets_csv_path.read
+             CSV.parse @config.tweets_csv.read
            end
   end
 
@@ -52,13 +55,13 @@ class Retrobot
     last_index = nil
     csv.each_with_index.each do |line, i|
       time = Time.parse line[3]
-      if time < $retro_days.ago
+      if time < @config.retro_days.ago
         last_index = i
         break;
       end
     end
     csv.slice! last_index..-1
-    logger.info "Next update: \"#{csv.last[5]}\" at #{$retro_days.since(Time.parse(csv.last[3]))}"
+    logger.info "Next update: \"#{csv.last[5]}\" at #{@config.retro_days.since(Time.parse(csv.last[3]))}"
   end
 
   def tweet_loop
@@ -80,7 +83,7 @@ class Retrobot
     *expanded_urls = line
 
     timestamp = Time.parse(timestamp).localtime
-    return false if timestamp > $retro_days.ago
+    return false if timestamp > @config.retro_days.ago
 
     if retweeted_status_id.present?
       retweet retweeted_status_id.to_i, text
@@ -96,7 +99,7 @@ class Retrobot
 
   def retweet(status_id, text=nil)
     logger.info "retweet: #{status_id} \"#{text}\""
-    return if $dryrun
+    return if @config.dryrun
     retryable(tries: RETRY_COUNT, sleep: RETRY_INTERVAL) do
       client.retweet status_id
     end
@@ -104,37 +107,52 @@ class Retrobot
 
   def tweet(text)
     logger.info "tweet: #{text}"
-    return if $dryrun
+    return if @config.dryrun
     retryable(tries: RETRY_COUNT, sleep: RETRY_INTERVAL) do
       client.update text
     end
   end
 
-  def init_env
-    if $env
-      Dotenv.load $env
-    else
-      Dotenv.load BASE_DIR.join('.env').to_s
+  def init_configuration
+    options = parse_options()
+    init_env(options[:env])
+
+    @config = Config.new
+    @config.load_env!
+    @config.load_yaml_file!(options[:config])
+    @config.merge!(options)
+    # FIXME: verify crediential for faster fail
+  end
+
+  def init_env(candidate=nil)
+    candidates = [
+      candidate, File.expand_path('../.env', __dir__),
+      "#{Dir.pwd}/.env"
+    ]
+    env_file = candidates.find { |f| f && File.exists?(f) }
+    if env_file
+      Dotenv.load env_file
     end
   end
 
-  def init_options
-    $retro_days = 365.days
-    $tweets_csv_path = BASE_DIR.join('tweets/tweets.csv')
+  def parse_options
+    options = {}
 
     opt = OptionParser.new ARGV
     opt.banner = "Usage: #{$0} [OPTIONS]"
-    opt.on('--debug') { $debug = true }
-    opt.on('--dryrun') { $dryrun = true }
-    opt.on('--env file') {|v| $env = v }
-    opt.on('--retro-days days') {|v| $retro_days = v.to_i.days }
-    opt.on('--tweets-csv path') {|v| $tweets_csv_path = Pathname v }
+    opt.on('--debug') { options[:debug] =  true }
+    opt.on('--dryrun') { options[:dryrun] = true }
+    opt.on('--env file') {|v| options[:env] = v }
+    opt.on('--config file') {|v| options[:config] = v }
+    opt.on('--retro-days days') {|v| options[:retro_days] = v }
+    opt.on('--tweets-csv path') {|v| options[:tweets_csv] = v }
     opt.parse!
+
+    options
   end
 
   def main
-    init_options
-    init_env
+    init_configuration
     init_twitter
     init_csv
     tweet_loop
