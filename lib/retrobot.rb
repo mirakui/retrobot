@@ -48,8 +48,11 @@ class Retrobot
 
   def csv
     @csv ||= begin
-             # FIXME: Find from candidates (configured, pwd, GEM_ROOT)
-             CSV.parse @config.tweets_csv.read
+              tweets_csv = file_from_candidates(
+                @config.tweets_csv,
+                GEM_ROOT.join('tweets', 'tweets.csv'),
+              )
+             CSV.parse File.read(tweets_csv)
            end
   end
 
@@ -169,6 +172,7 @@ class Retrobot
   private
 
   def file_from_candidates(*candidates)
-    candidates.find { |f| f && File.exists?(f.to_s) }
+    path = candidates.find { |f| f && File.exists?(f.to_s) }
+    path && path.to_s
   end
 end

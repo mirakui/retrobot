@@ -15,7 +15,7 @@ class Retrobot
     )
 
     DEFAULTS = {
-      tweets_csv: GEM_ROOT.join('/tweets/tweets.csv')
+      tweets_csv: './tweets/tweets.csv',
       retro_days: 365,
       debug: false,
       dryrun: false
