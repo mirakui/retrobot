@@ -48,12 +48,12 @@ class Retrobot
 
   def csv
     @csv ||= begin
-              tweets_csv = file_from_candidates(
-                @config.tweets_csv,
-                GEM_ROOT.join('tweets', 'tweets.csv'),
-              )
-             CSV.parse File.read(tweets_csv)
-           end
+               tweets_csv = file_from_candidates(
+                 @config.tweets_csv,
+                 GEM_ROOT.join('tweets', 'tweets.csv'),
+               )
+               CSV.parse File.read(tweets_csv)
+             end
   end
 
   def init_csv
