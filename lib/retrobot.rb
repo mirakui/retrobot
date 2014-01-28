@@ -121,7 +121,14 @@ class Retrobot
 
     @config = Config.new
     @config.load_env!
-    @config.load_yaml_file!(options[:config])
+    if options[:config]
+      @config.load_yaml_file!(options[:config])
+    elsif File.exists?('./retrobot.yml')
+      @config.load_yaml_file!('./retrobot.yml')
+    elsif GEM_ROOT.join('retrobot.yml').exists?
+      @config.load_yaml_file!(GEM_ROOT.join('retrobot.yml'))
+    end
+
     @config.merge!(options)
     # FIXME: verify crediential for faster fail
   end
