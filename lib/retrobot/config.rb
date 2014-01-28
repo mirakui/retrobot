@@ -12,13 +12,19 @@ class Retrobot
       retro_days
       debug
       dryrun
+      loop_interval
+      retry_interval
+      retry_count
     )
 
     DEFAULTS = {
       tweets_csv: './tweets/tweets.csv',
       retro_days: 365,
       debug: false,
-      dryrun: false
+      dryrun: false,
+      loop_interval: 3,
+      retry_interval: 3,
+      retry_count: 5
     }
 
     def initialize(options={})
@@ -40,6 +46,10 @@ class Retrobot
     def tweets_csv
       Pathname.new(@options[:tweets_csv])
     end
+
+    def loop_interval;  @options[:loop_interval].to_i; end
+    def retry_interval; @options[:retry_interval].to_i; end
+    def retry_count;    @options[:retry_count].to_i; end
 
     def load_yaml_file!(path)
       @options.merge! Psych.load_file(path.to_s).symbolize_keys

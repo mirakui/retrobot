@@ -13,10 +13,6 @@ require 'optparse'
 require 'cgi'
 
 class Retrobot
-  # FIXME: make them configurable
-  LOOP_INTERVAL = 3
-  RETRY_INTERVAL = 3
-  RETRY_COUNT = 5
 
   GEM_ROOT = Pathname.new('..').expand_path(__dir__)
 
@@ -72,7 +68,7 @@ class Retrobot
       if process_line(line)
         csv.pop
       end
-      sleep LOOP_INTERVAL
+      sleep @config.loop_interval
       logger.debug '.'
     end
   end
@@ -101,7 +97,7 @@ class Retrobot
   def retweet(status_id, text=nil)
     logger.info "retweet: #{status_id} \"#{text}\""
     return if @config.dryrun
-    retryable(tries: RETRY_COUNT, sleep: RETRY_INTERVAL) do
+    retryable(tries: @config.retry_count, sleep: @config.retry_interval) do
       client.retweet status_id
     end
   end
@@ -109,7 +105,7 @@ class Retrobot
   def tweet(text)
     logger.info "tweet: #{text}"
     return if @config.dryrun
-    retryable(tries: RETRY_COUNT, sleep: RETRY_INTERVAL) do
+    retryable(tries: @config.retry_count, sleep: @config.retry_interval) do
       client.update text
     end
   end
