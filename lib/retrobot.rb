@@ -126,7 +126,8 @@ class Retrobot
     @config.load_yaml_file!(config_yml) if config_yml
 
     @config.merge!(options)
-    # FIXME: verify crediential for faster fail
+
+    client.current_user # for faster fail (e.g. wrong credentials given)
   end
 
   def init_env(candidate=nil)
