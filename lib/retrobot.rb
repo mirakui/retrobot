@@ -34,7 +34,6 @@ class Retrobot
   def logger
     @logger ||= begin
                   l = Logger.new($stdout)
-                  # FIXME: set at optparse
                   l.level = @config.debug ? Logger::DEBUG : Logger::INFO
                   l
                 end
