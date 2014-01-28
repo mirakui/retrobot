@@ -48,6 +48,7 @@ class Retrobot
 
   def csv
     @csv ||= begin
+             # FIXME: Find from candidates (configured, pwd, GEM_ROOT)
              CSV.parse @config.tweets_csv.read
            end
   end
@@ -121,24 +122,22 @@ class Retrobot
 
     @config = Config.new
     @config.load_env!
-    if options[:config]
-      @config.load_yaml_file!(options[:config])
-    elsif File.exists?('./retrobot.yml')
-      @config.load_yaml_file!('./retrobot.yml')
-    elsif GEM_ROOT.join('retrobot.yml').exists?
-      @config.load_yaml_file!(GEM_ROOT.join('retrobot.yml'))
-    end
+
+    config_yml = file_from_candidates(
+      options[:config], './retrobot.yml',
+      GEM_ROOT.join('retrobot.yml')
+    )
+    @config.load_yaml_file!(config_yml) if config_yml
 
     @config.merge!(options)
     # FIXME: verify crediential for faster fail
   end
 
   def init_env(candidate=nil)
-    candidates = [
+    env_file = file_from_candidates(
       candidate, GEM_ROOT.join('.env').to_s,
       "#{Dir.pwd}/.env"
-    ]
-    env_file = candidates.find { |f| f && File.exists?(f) }
+    )
     if env_file
       Dotenv.load env_file
     end
@@ -165,5 +164,11 @@ class Retrobot
     init_twitter
     init_csv
     tweet_loop
+  end
+
+  private
+
+  def file_from_candidates(*candidates)
+    candidates.find { |f| f && File.exists?(f.to_s) }
   end
 end
