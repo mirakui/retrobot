@@ -20,17 +20,11 @@ class Retrobot
 
   GEM_ROOT = Pathname.new('..').expand_path(__dir__)
 
-  def init_twitter
-    # FIXME: set in #client method
-    Twitter.configure do |config|
-      config.consumer_key = @config.consumer_key
-      config.consumer_secret = @config.consumer_secret
-    end
-  end
-
   def client
     @client ||= begin
                   Twitter::Client.new(
+                    consumer_key: @config.consumer_key,
+                    consumer_secret: @config.consumer_secret,
                     oauth_token: @config.access_token,
                     oauth_token_secret: @config.access_secret
                   )
@@ -164,7 +158,6 @@ class Retrobot
 
   def main
     init_configuration
-    init_twitter
     init_csv
     tweet_loop
   end
