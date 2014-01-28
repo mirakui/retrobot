@@ -20,6 +20,10 @@ class Retrobot
 
   GEM_ROOT = Pathname.new('..').expand_path(__dir__)
 
+  def initialize(argv)
+    @argv = argv
+  end
+
   def client
     @client ||= Twitter::Client.new(
                   consumer_key: @config.consumer_key,
@@ -141,7 +145,7 @@ class Retrobot
   def parse_options
     options = {}
 
-    opt = OptionParser.new ARGV
+    opt = OptionParser.new @argv
     opt.banner = "Usage: #{$0} [OPTIONS]"
     opt.on('--debug') { options[:debug] =  true }
     opt.on('--dryrun') { options[:dryrun] = true }

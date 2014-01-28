@@ -9,4 +9,4 @@ rescue LoadError
   retry
 end
 
-Retrobot.new.main
+Retrobot.new(ARGV).main
