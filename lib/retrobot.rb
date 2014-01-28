@@ -18,6 +18,8 @@ class Retrobot
   RETRY_INTERVAL = 3
   RETRY_COUNT = 5
 
+  GEM_ROOT = Pathname.new('..').expand_path(__dir__)
+
   def init_twitter
     # FIXME: set in #client method
     Twitter.configure do |config|
@@ -126,7 +128,7 @@ class Retrobot
 
   def init_env(candidate=nil)
     candidates = [
-      candidate, File.expand_path('../.env', __dir__),
+      candidate, GEM_ROOT.join('.env').to_s,
       "#{Dir.pwd}/.env"
     ]
     env_file = candidates.find { |f| f && File.exists?(f) }

@@ -15,7 +15,7 @@ class Retrobot
     )
 
     DEFAULTS = {
-      tweets_csv: File.expand_path('../../tweets/tweets.csv', __dir__),
+      tweets_csv: GEM_ROOT.join('/tweets/tweets.csv')
       retro_days: 365,
       debug: false,
       dryrun: false
@@ -42,7 +42,7 @@ class Retrobot
     end
 
     def load_yaml_file!(path)
-      @options.merge! Psych.load_file(path).symbolize_keys
+      @options.merge! Psych.load_file(path.to_s).symbolize_keys
     end
 
     def load_env!
