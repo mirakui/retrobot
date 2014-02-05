@@ -54,6 +54,16 @@ def init_csv
     end
   end
   csv.slice! last_index..-1
+  if $exclude_mention
+    csv.reject! do |line|
+      not line[2].empty?
+    end
+  end
+  if $exclude_retweet
+    csv.reject! do |line|
+      not line[6].empty?
+    end
+  end
   logger.info "Next update: \"#{csv.last[5]}\" at #{$retro_days.since(Time.parse(csv.last[3]))}"
 end
 
@@ -125,6 +135,8 @@ def init_options
   opt.on('--env file') {|v| $env = v }
   opt.on('--retro-days days') {|v| $retro_days = v.to_i.days }
   opt.on('--tweets-csv path') {|v| $tweets_csv_path = Pathname v }
+  opt.on('--exclude-mention') {|v| $exclude_mention = true }
+  opt.on('--exclude-retweet') {|v| $exclude_retweet = true }
   opt.parse!
 end
 
