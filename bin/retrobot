@@ -7,11 +7,14 @@ require 'pathname'
 require 'time'
 require 'optparse'
 require 'cgi'
+require 'net/https'
+require 'uri'
 
 LOOP_INTERVAL = 3
 RETRY_INTERVAL = 3
 RETRY_COUNT = 5
 BASE_DIR = Pathname('../../').expand_path(__FILE__)
+TWITTER_BASE_URL = 'https://twitter.com'
 
 def init_twitter
   Twitter.configure do |config|
@@ -41,6 +44,16 @@ def csv
   @csv ||= begin
            CSV.parse $tweets_csv_path.read
          end
+end
+
+def http_twitter
+  uri = URI.parse(TWITTER_BASE_URL)
+  http = Net::HTTP.new(uri.host, uri.port)
+  http.open_timeout = 3
+  http.read_timeout = 3
+  http.use_ssl = true
+  http.verify_mode = OpenSSL::SSL::VERIFY_NONE
+  http
 end
 
 def init_csv
@@ -83,11 +96,36 @@ def process_line(line)
     return true
   end
 
-  tweet CGI.unescape_html(text.gsub('@', ''))
+  text = process_text(text, in_reply_to_status_id)
+  tweet text
   true
 rescue Twitter::Error
   logger.error "#{$!} (#{$!.class})\n  #{$@.join("\n  ")}"
   true
+end
+
+def process_text(text, in_reply_to_status_id)
+  if $in_reply_to_url && !in_reply_to_status_id.blank?
+    path_for_redirect = "/%20/status/#{in_reply_to_status_id}"
+
+    response = begin
+                 http_twitter.start { |http| http.head(path_for_redirect) }
+               rescue IOError, EOFError, Errno::ECONNRESET, Errno::ETIMEDOUT, SystemCallError
+                 nil
+               end
+
+    in_reply_to_url = if response && !response['location'].blank?
+                        response['location']
+                      else
+                        logger.warn 'could not get in reply to url'
+                        TWITTER_BASE_URL + path_for_redirect
+                      end
+
+    text = text[0..113] + '...' if text.length > 118
+    text = text + ' ' + in_reply_to_url
+  end
+
+  CGI.unescape_html(text.gsub('@', ''))
 end
 
 def retweet(status_id, text=nil)
@@ -125,6 +163,7 @@ def init_options
   opt.on('--env file') {|v| $env = v }
   opt.on('--retro-days days') {|v| $retro_days = v.to_i.days }
   opt.on('--tweets-csv path') {|v| $tweets_csv_path = Pathname v }
+  opt.on('--in-reply-to-url') { $in_reply_to_url = true }
   opt.parse!
 end
 
