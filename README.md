@@ -19,7 +19,7 @@ $ cd retrobot
 $ bundle install
 ```
 
-### Using bundler 
+### Using bundler
 
 This way may be useful for deploying using capistrano or heroku.
 
@@ -63,7 +63,7 @@ $ bin/retrobot -c /path/to/retrobot.yml
 or you can run it as a daemon as follows:
 
 ```
-$ bin/retrobotctl [start|stop]
+$ bin/retrobotctl [start|stop] -- -c /path/to/retrobot.yml
 ```
 
 ## License
