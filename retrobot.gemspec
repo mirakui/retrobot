@@ -19,7 +19,6 @@ Gem::Specification.new do |gem|
 
   gem.add_dependency 'twitter', '~> 4.8.1'
   gem.add_dependency 'activesupport', '~> 4.0'
-  gem.add_dependency 'dotenv'
   gem.add_dependency 'retryable'
   gem.add_dependency 'daemons'
 

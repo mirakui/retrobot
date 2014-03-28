@@ -3,7 +3,6 @@ require 'retrobot/config'
 
 require 'active_support/core_ext'
 require 'twitter'
-require 'dotenv'
 require 'retryable'
 require 'logger'
 require 'csv'
@@ -112,10 +111,7 @@ class Retrobot
 
   def init_configuration
     options = parse_options()
-    init_env(options[:env])
-
     @config = Config.new
-    @config.load_env!
 
     config_yml = file_from_candidates(
       options[:config], './retrobot.yml',
@@ -128,16 +124,6 @@ class Retrobot
     client.current_user # for faster fail (e.g. wrong credentials given)
   end
 
-  def init_env(candidate=nil)
-    env_file = file_from_candidates(
-      candidate, GEM_ROOT.join('.env').to_s,
-      "#{Dir.pwd}/.env"
-    )
-    if env_file
-      Dotenv.load env_file
-    end
-  end
-
   def parse_options
     options = {}
 
@@ -145,7 +131,6 @@ class Retrobot
     opt.banner = "Usage: #{$0} [OPTIONS]"
     opt.on('--debug') { options[:debug] =  true }
     opt.on('--dryrun') { options[:dryrun] = true }
-    opt.on('--env file') {|v| options[:env] = v }
     opt.on('--config file') {|v| options[:config] = v }
     opt.on('--retro-days days') {|v| options[:retro_days] = v }
     opt.on('--tweets-csv path') {|v| options[:tweets_csv] = v }
