@@ -17,14 +17,10 @@ Gem::Specification.new do |gem|
   gem.test_files    = gem.files.grep(%r{^(test|spec|features)/})
   gem.require_paths = ["lib"]
 
-  gem.add_dependency 'twitter', '~> 4.8.1'
+  gem.add_dependency 'twitter', '~> 5.8'
   gem.add_dependency 'activesupport', '~> 4.0'
   gem.add_dependency 'retryable'
   gem.add_dependency 'daemons'
 
   gem.add_runtime_dependency 'get-twitter-oauth-token'
-
-  gem.add_development_dependency "rspec", "~> 2.13.0"
-  gem.add_development_dependency "rspec-json_matcher", "~> 0.0.4"
-  gem.add_development_dependency "rack-test", "~> 0.6.2"
 end

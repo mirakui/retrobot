@@ -20,12 +20,12 @@ class Retrobot
   end
 
   def client
-    @client ||= Twitter::Client.new(
-                  consumer_key: @config.consumer_key,
-                  consumer_secret: @config.consumer_secret,
-                  oauth_token: @config.access_token,
-                  oauth_token_secret: @config.access_secret
-                )
+    @client ||= Twitter::REST::Client.new do |config|
+                  config.consumer_key = @config.consumer_key
+                  config.consumer_secret = @config.consumer_secret
+                  config.access_token = @config.access_token
+                  config.access_token_secret = @config.access_secret
+                end
   end
 
   def logger
