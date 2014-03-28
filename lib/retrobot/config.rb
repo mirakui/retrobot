@@ -54,14 +54,5 @@ class Retrobot
     def load_yaml_file!(path)
       @options.merge! Psych.load_file(path.to_s).symbolize_keys
     end
-
-    def load_env!
-      KEYS.each do |k|
-        if (v = ENV[k.to_s.upcase]) 
-          @options[k] = v
-        end
-      end
-      nil
-    end
   end
 end

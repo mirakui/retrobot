@@ -38,7 +38,7 @@ $ bundle exec get-twitter-oauth-token
 (follow shown instruction to earn required credentials)
 
 $ unzip ~/tweets.zip -d tweets
-$ cp .env retrobot.example.yml retrobot.yml
+$ cp retrobot.example.yml retrobot.yml
 $ vi retrobot.yml
 (write your oauth credentials)
 ```
