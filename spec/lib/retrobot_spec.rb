@@ -18,9 +18,11 @@ describe Retrobot do
     let(:line) do
       # tweet_id, in_reply_to_status_id, in_reply_to_user_id, timestamp, source,
       # text, retweeted_status_id, retweeted_status_user_id, retweeted_status_timestamp,
-      ['449471248742236160','','','2014-03-28 09:01:11 +0000','<a href="http://ifttt.com" rel="nofollow">IFTTT</a>',
-       '花金だーワッショーイ！テンションAGEAGEマック http://t.co/nvXD6e2rdG','','','','http://ift.tt/1d1CL0W']
+      ['449471248742236160', '', '', '2014-03-28 09:01:11 +0000', '<a href="http://ifttt.com" rel="nofollow">IFTTT</a>',
+       text, retweeted_status_id, '', '', 'http://ift.tt/1d1CL0W']
     end
+    let(:text) { '花金だーワッショーイ！テンションAGEAGEマック http://t.co/nvXD6e2rdG' }
+    let(:retweeted_status_id) { '' }
 
     context '365 days passed from the day' do
       around do |example|
@@ -34,10 +36,24 @@ describe Retrobot do
         expect(retrobot.process_line line).to be_true
       end
 
-      it '"@" should be removed' do
-        line[5] = '@mirakui hello'
-        expect(retrobot).to receive(:tweet).with('mirakui hello')
-        expect(retrobot.process_line line).to be_true
+      context 'with a text includes mention' do
+        let(:text) { '@mirakui hello' }
+
+        it '"@" should be removed' do
+          expect(retrobot).to receive(:tweet).with('mirakui hello')
+          expect(retrobot.process_line line).to be_true
+        end
+      end
+
+      context 'with a line has retweeted_status_id' do
+        let(:text) { 'RT @mirakui hello' }
+        let(:retweeted_status_id) { '123456789' }
+
+        it 'should be retweeted' do
+          expect(retrobot).to receive(:retweet).with(123456789, 'RT @mirakui hello')
+          expect(retrobot).not_to receive(:tweet)
+          expect(retrobot.process_line line).to be_true
+        end
       end
     end
 
