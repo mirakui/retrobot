@@ -8,7 +8,7 @@ Retrobot tweets a word that you've tweeted just 1 year ago!
 
 ## Requirements
 
-- Ruby 1.9+
+- Ruby 2.0+
 - Your [tweets.zip](https://blog.twitter.com/2012/your-twitter-archive)
 
 ## Installation

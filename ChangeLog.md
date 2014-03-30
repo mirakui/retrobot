@@ -1,4 +1,7 @@
 # ChangeLog
+## 0.2.2
+- Stop supporting Ruby 1.9
+
 ## 0.2.1
 - Update twitter gem to suppress the deprecation warning from faraday gem
 
