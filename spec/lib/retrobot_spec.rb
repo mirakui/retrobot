@@ -12,8 +12,12 @@ describe Retrobot do
   end
 
   let(:config) do
-    Retrobot::Config.new retro_days: 365
+    Retrobot::Config.new(
+      retro_days: 365,
+      retweet: retweet
+    )
   end
+  let(:retweet) { false }
 
   describe '#process_line' do
     let(:line) do
@@ -50,10 +54,24 @@ describe Retrobot do
         let(:text) { 'RT @mirakui hello' }
         let(:retweeted_status_id) { '123456789' }
 
-        it 'should be retweeted' do
-          expect(retrobot).to receive(:retweet).with(123456789, 'RT @mirakui hello')
-          expect(retrobot).not_to receive(:tweet)
-          expect(retrobot.process_line line).to be_true
+        context 'if retweeting enabled' do
+          let(:retweet) { true }
+
+          it 'should be retweeted' do
+            expect(retrobot).to receive(:retweet).with(123456789, 'RT @mirakui hello')
+            expect(retrobot).not_to receive(:tweet)
+            expect(retrobot.process_line line).to be_true
+          end
+        end
+
+        context 'if retweeting disabled' do
+          let(:retweet) { false }
+
+          it 'should not be retweeted' do
+            expect(retrobot).not_to receive(:retweet)
+            expect(retrobot).not_to receive(:tweet)
+            expect(retrobot.process_line line).to be_false
+          end
         end
       end
     end

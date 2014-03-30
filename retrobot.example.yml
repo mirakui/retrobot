@@ -4,5 +4,6 @@ consumer_secret: your_consumer_secret
 access_token: your_access_token
 access_secret: your_access_secret
 # retro_days: 365 (default=365 / how days long ago do you want to see? / in N days ago)
+# retweet: false (default)
 # debug: false (default)
 # dryrun: false (default)

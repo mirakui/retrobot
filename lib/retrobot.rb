@@ -82,8 +82,13 @@ class Retrobot
     return false if timestamp > @config.retro_days.ago
 
     if retweeted_status_id.present?
-      retweet retweeted_status_id.to_i, text
-      return true
+      if @config.retweet
+        retweet retweeted_status_id.to_i, text
+        return true
+      else
+        logger.info "retweet (skipped): #{retweeted_status_id} \"#{text}\""
+        return false
+      end
     end
 
     tweet CGI.unescape_html(text.gsub('@', ''))

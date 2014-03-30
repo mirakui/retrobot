@@ -10,6 +10,7 @@ class Retrobot
       access_token
       access_secret
       retro_days
+      retweet
       debug
       dryrun
       loop_interval
@@ -20,6 +21,7 @@ class Retrobot
     DEFAULTS = {
       tweets_csv: './tweets/tweets.csv',
       retro_days: 365,
+      retweet: false,
       debug: false,
       dryrun: false,
       loop_interval: 3,
