@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/mirakui/retrobot.png?branch=master)](https://travis-ci.org/mirakui/retrobot)
+
 retrobot
 =============
 Retrobot is a twitter-bot engine that working at [mirakui_retro](https://twitter.com/mirakui_retro).
