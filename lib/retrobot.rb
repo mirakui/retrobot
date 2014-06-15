@@ -1,5 +1,6 @@
 require 'retrobot/version'
 require 'retrobot/config'
+require 'retrobot/tweet_filters/add_in_reply_to_url'
 
 require 'active_support/core_ext'
 require 'twitter'
@@ -81,7 +82,7 @@ class Retrobot
       tweet_id: tweet_id,
       in_reply_to_status_id: in_reply_to_status_id,
       in_reply_to_user_id: in_reply_to_user_id,
-      timestamp: timestamp,
+      timestamp: Time.parse(timestamp).localtime,
       source: source,
       text: text,
       retweeted_status_id: retweeted_status_id,
@@ -90,8 +91,11 @@ class Retrobot
       expanded_urls: expanded_urls
     }
 
-    timestamp = Time.parse(timestamp).localtime
-    return false if timestamp > @config.retro_days.ago
+    tweet_filters.each do |filter|
+      tweet_hash = filter.filter(tweet_hash)
+    end
+
+    return false if tweet_hash[:timestamp] > @config.retro_days.ago
 
     if retweeted_status_id.present?
       if @config.retweet
@@ -124,6 +128,13 @@ class Retrobot
     retryable(tries: @config.retry_count, sleep: @config.retry_interval) do
       client.update text
     end
+  end
+
+  def tweet_filters
+    return @tweet_filters if @tweet_filters
+    @tweet_filters = []
+    @tweet_filters << TweetFilters::AddInReplyToUrl.new(self) if @config.add_in_reply_to_url
+    @tweet_filters
   end
 
   def init_configuration

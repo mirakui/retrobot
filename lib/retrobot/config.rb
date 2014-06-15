@@ -16,6 +16,7 @@ class Retrobot
       loop_interval
       retry_interval
       retry_count
+      add_in_reply_to_url
     )
 
     DEFAULTS = {
@@ -26,7 +27,8 @@ class Retrobot
       dryrun: false,
       loop_interval: 3,
       retry_interval: 3,
-      retry_count: 5
+      retry_count: 5,
+      add_in_reply_to_url: false
     }
 
     def initialize(options={})
