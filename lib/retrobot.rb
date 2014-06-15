@@ -77,6 +77,18 @@ class Retrobot
     timestamp, source, text,
     retweeted_status_id, retweeted_status_user_id, retweeted_status_timestamp,
     *expanded_urls = line
+    tweet_hash = {
+      tweet_id: tweet_id,
+      in_reply_to_status_id: in_reply_to_status_id,
+      in_reply_to_user_id: in_reply_to_user_id,
+      timestamp: timestamp,
+      source: source,
+      text: text,
+      retweeted_status_id: retweeted_status_id,
+      retweeted_status_user_id: retweeted_status_user_id,
+      retweeted_status_timestamp: retweeted_status_timestamp,
+      expanded_urls: expanded_urls
+    }
 
     timestamp = Time.parse(timestamp).localtime
     return false if timestamp > @config.retro_days.ago
