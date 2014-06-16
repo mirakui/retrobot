@@ -1,20 +1,21 @@
 require 'net/https'
 require 'cgi'
 require 'uri'
+require 'retrobot/tweet_filters/base'
 
 class Retrobot
   module TweetFilters
-    class AddInReplyToUrl
+    class AddInReplyToUrl < Base
       TWITTER_BASE_URL = 'https://twitter.com'
 
       def initialize(retrobot)
-        @retrobot = retrobot
+        super
       end
 
       def filter(tweet)
-        if tweet[:in_reply_to_status_id]
-          text = replace_text(tweet[:text], tweet[:in_reply_to_status_id])
-          tweet.dup.merge text: text
+        if tweet.in_reply_to_status_id
+          tweet.text = replace_text(tweet.text, tweet.in_reply_to_status_id)
+          tweet
         else
           tweet
         end
@@ -43,14 +44,14 @@ class Retrobot
         in_reply_to_url = if response && !response['location'].blank?
                             response['location']
                           else
-                            @retrobot.logger.warn 'could not get in reply to url'
+                            logger.warn 'could not get in reply to url'
                             TWITTER_BASE_URL + path_for_redirect
                           end
 
         text = text[0..113] + '...' if text.length > 118
         text = text + ' ' + in_reply_to_url
 
-        CGI.unescape_html(text.gsub('@', ''))
+        text
       end
     end
   end

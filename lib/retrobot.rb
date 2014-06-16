@@ -1,6 +1,7 @@
 require 'retrobot/version'
 require 'retrobot/config'
-require 'retrobot/tweet_filters/add_in_reply_to_url'
+require 'retrobot/tweet'
+require 'retrobot/tweet_filters'
 
 require 'active_support/core_ext'
 require 'twitter'
@@ -15,6 +16,8 @@ require 'cgi'
 class Retrobot
 
   GEM_ROOT = Pathname.new('..').expand_path(__dir__)
+
+  attr_reader :config
 
   def initialize(argv)
     @argv = argv
@@ -74,66 +77,30 @@ class Retrobot
   end
 
   def process_line(line)
-    tweet_id, in_reply_to_status_id, in_reply_to_user_id,
-    timestamp, source, text,
-    retweeted_status_id, retweeted_status_user_id, retweeted_status_timestamp,
-    *expanded_urls = line
-    tweet_hash = {
-      tweet_id: tweet_id,
-      in_reply_to_status_id: in_reply_to_status_id,
-      in_reply_to_user_id: in_reply_to_user_id,
-      timestamp: Time.parse(timestamp).localtime,
-      source: source,
-      text: text,
-      retweeted_status_id: retweeted_status_id,
-      retweeted_status_user_id: retweeted_status_user_id,
-      retweeted_status_timestamp: retweeted_status_timestamp,
-      expanded_urls: expanded_urls
-    }
+    tweet = Tweet.parse_line(line)
 
     tweet_filters.each do |filter|
-      tweet_hash = filter.filter(tweet_hash)
+      tweet = filter.filter(tweet)
+      break unless tweet
     end
 
-    return false if tweet_hash[:timestamp] > @config.retro_days.ago
-
-    if retweeted_status_id.present?
-      if @config.retweet
-        retweet retweeted_status_id.to_i, text
-        return true
-      else
-        logger.info "retweet (skipped): #{retweeted_status_id} \"#{text}\""
-        return false
-      end
-    end
-
-    tweet CGI.unescape_html(text.gsub('@', ''))
     true
   rescue Twitter::Error
     logger.error "#{$!} (#{$!.class})\n  #{$@.join("\n  ")}"
     true
-  end
-
-  def retweet(status_id, text=nil)
-    logger.info "retweet: #{status_id} \"#{text}\""
-    return if @config.dryrun
-    retryable(tries: @config.retry_count, sleep: @config.retry_interval) do
-      client.retweet status_id
-    end
-  end
-
-  def tweet(text)
-    logger.info "tweet: #{text}"
-    return if @config.dryrun
-    retryable(tries: @config.retry_count, sleep: @config.retry_interval) do
-      client.update text
-    end
+  rescue Retrobot::TweetFilters::RetryLater
+    false
   end
 
   def tweet_filters
     return @tweet_filters if @tweet_filters
     @tweet_filters = []
+    @tweet_filters << TweetFilters::RetroDays.new(self)
     @tweet_filters << TweetFilters::AddInReplyToUrl.new(self) if @config.add_in_reply_to_url
+    @tweet_filters << TweetFilters::Retweet.new(self)
+    @tweet_filters << TweetFilters::RemoveAtmark.new(self)
+    @tweet_filters << TweetFilters::Unescape.new(self)
+    @tweet_filters << TweetFilters::Tweet.new(self)
     @tweet_filters
   end
 

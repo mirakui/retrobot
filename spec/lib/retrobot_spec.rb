@@ -17,6 +17,8 @@ describe Retrobot do
       retweet: retweet
     )
   end
+
+  let(:client) { retrobot.client }
   let(:retweet) { false }
 
   describe '#process_line' do
@@ -37,7 +39,7 @@ describe Retrobot do
       end
 
       it 'should tweet' do
-        expect(retrobot).to receive(:tweet).with('花金だーワッショーイ！テンションAGEAGEマック http://t.co/nvXD6e2rdG')
+        expect(client).to receive(:update).with('花金だーワッショーイ！テンションAGEAGEマック http://t.co/nvXD6e2rdG')
         expect(retrobot.process_line line).to be_true
       end
 
@@ -45,7 +47,7 @@ describe Retrobot do
         let(:text) { '@mirakui hello' }
 
         it '"@" should be removed' do
-          expect(retrobot).to receive(:tweet).with('mirakui hello')
+          expect(client).to receive(:update).with('mirakui hello')
           expect(retrobot.process_line line).to be_true
         end
       end
@@ -58,8 +60,8 @@ describe Retrobot do
           let(:retweet) { true }
 
           it 'should be retweeted' do
-            expect(retrobot).to receive(:retweet).with(123456789, 'RT @mirakui hello')
-            expect(retrobot).not_to receive(:tweet)
+            expect(client).to receive(:retweet).with(123456789)
+            expect(client).not_to receive(:update)
             expect(retrobot.process_line line).to be_true
           end
         end
@@ -68,9 +70,9 @@ describe Retrobot do
           let(:retweet) { false }
 
           it 'should not be retweeted' do
-            expect(retrobot).not_to receive(:retweet)
-            expect(retrobot).not_to receive(:tweet)
-            expect(retrobot.process_line line).to be_false
+            expect(client).not_to receive(:retweet)
+            expect(client).not_to receive(:update)
+            expect(retrobot.process_line line).to be_true
           end
         end
       end
@@ -79,7 +81,7 @@ describe Retrobot do
     context "365 days have not passed from the day" do
       it 'should not tweet' do
         Timecop.freeze('2015-03-28 09:01:10 +0000') do
-          expect(retrobot).not_to receive(:tweet)
+          expect(client).not_to receive(:update)
           expect(retrobot.process_line line).to be_false
         end
       end
