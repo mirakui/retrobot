@@ -40,7 +40,7 @@ describe Retrobot do
 
       it 'should tweet' do
         expect(client).to receive(:update).with('花金だーワッショーイ！テンションAGEAGEマック http://t.co/nvXD6e2rdG')
-        expect(retrobot.process_line line).to be_true
+        expect(retrobot.process_line line).to be true
       end
 
       context 'with a text includes mention' do
@@ -48,7 +48,7 @@ describe Retrobot do
 
         it '"@" should be removed' do
           expect(client).to receive(:update).with('mirakui hello')
-          expect(retrobot.process_line line).to be_true
+          expect(retrobot.process_line line).to be true
         end
       end
 
@@ -62,7 +62,7 @@ describe Retrobot do
           it 'should be retweeted' do
             expect(client).to receive(:retweet).with(123456789)
             expect(client).not_to receive(:update)
-            expect(retrobot.process_line line).to be_true
+            expect(retrobot.process_line line).to be true
           end
         end
 
@@ -72,7 +72,7 @@ describe Retrobot do
           it 'should not be retweeted' do
             expect(client).not_to receive(:retweet)
             expect(client).not_to receive(:update)
-            expect(retrobot.process_line line).to be_true
+            expect(retrobot.process_line line).to be true
           end
         end
       end
@@ -82,7 +82,7 @@ describe Retrobot do
       it 'should not tweet' do
         Timecop.freeze('2015-03-28 09:01:10 +0000') do
           expect(client).not_to receive(:update)
-          expect(retrobot.process_line line).to be_false
+          expect(retrobot.process_line line).to be false
         end
       end
     end
