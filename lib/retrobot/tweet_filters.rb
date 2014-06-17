@@ -4,6 +4,7 @@ require 'retrobot/tweet_filters/retro_days'
 require 'retrobot/tweet_filters/retweet'
 require 'retrobot/tweet_filters/tweet'
 require 'retrobot/tweet_filters/unescape'
+require 'retrobot/tweet_filters/add_in_reply_to_url'
 
 class Retrobot
   module TweetFilters
