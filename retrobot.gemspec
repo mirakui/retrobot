@@ -22,7 +22,7 @@ Gem::Specification.new do |gem|
   gem.add_dependency 'retryable'
   gem.add_dependency 'daemons'
 
-  gem.add_development_dependency 'rspec'
+  gem.add_development_dependency 'rspec', '= 2.99'
   gem.add_development_dependency 'timecop'
 
   gem.add_runtime_dependency 'get-twitter-oauth-token'

@@ -1,4 +1,9 @@
 # ChangeLog
+## 0.3.0
+- Add `add_in_reply_to` option (Thanks @studio3104)
+  - https://github.com/mirakui/retrobot/pull/7
+- Separate bot logics as TweetFilters
+
 ## 0.2.2
 - Stop supporting Ruby 1.9
 - Add `retweet` option (default: `false`)

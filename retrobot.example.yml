@@ -7,3 +7,4 @@ access_secret: your_access_secret
 # retweet: false (default)
 # debug: false (default)
 # dryrun: false (default)
+# add_in_reply_to_url: false (default=false / add url of in_reply_to into the tweet)
