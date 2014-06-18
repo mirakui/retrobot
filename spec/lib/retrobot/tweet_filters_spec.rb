@@ -6,9 +6,14 @@ require 'timecop'
 
 describe Retrobot::TweetFilters do
   let(:retrobot) {
-    double(:retrobot, logger: Logger.new('/dev/null'), config: config)
+    double(:retrobot,
+           logger: Logger.new('/dev/null'),
+           config: config,
+           client: client
+          )
   }
 
+  let(:client) { double('client', retweet: nil, update: nil) }
   let(:filter) { filter_class.new retrobot }
   let(:config) do
     Retrobot::Config.new
@@ -75,6 +80,53 @@ describe Retrobot::TweetFilters do
       end
       tweet_after = filter.filter(tweet_before)
       expect(tweet_after.text).to eq('>_<')
+    end
+  end
+
+  describe 'Retweet' do
+    let(:filter_class) { Retrobot::TweetFilters::Retweet }
+
+    context 'retweeted_status_id is present' do
+      let(:tweet_before) do
+        Retrobot::Tweet.new.tap do |t|
+          t.retweeted_status_id = 123456
+        end
+      end
+
+      context 'config.retweet is true' do
+        let(:config) { Retrobot::Config.new retweet: true }
+
+        it 'retweets' do
+          tweet_after = filter.filter(tweet_before)
+          expect(tweet_after).to be(nil)
+          expect(retrobot.client).to have_received(:retweet).with(123456)
+        end
+      end
+
+      context 'config.retweet is false' do
+        let(:config) { Retrobot::Config.new retweet: false }
+
+        it 'does not retweet' do
+          tweet_after = filter.filter(tweet_before)
+          expect(tweet_after).to be(nil)
+          expect(retrobot.client).not_to have_received(:retweet)
+        end
+      end
+    end
+
+    context 'retweeted_status_id is blank' do
+      let(:tweet_before) do
+        Retrobot::Tweet.new.tap do |t|
+          t.retweeted_status_id = nil
+        end
+      end
+      let(:config) { Retrobot::Config.new retweet: true }
+
+      it 'does not retweet' do
+        tweet_after = filter.filter(tweet_before)
+        expect(tweet_after).to eq(tweet_before)
+        expect(retrobot.client).not_to have_received(:retweet)
+      end
     end
   end
 end
