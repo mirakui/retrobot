@@ -65,4 +65,16 @@ describe Retrobot::TweetFilters do
       expect(tweet_after.text).to eq('mirakui_retro hello')
     end
   end
+
+  describe 'Unescape' do
+    let(:filter_class) { Retrobot::TweetFilters::Unescape }
+
+    it 'unescapes text' do
+      tweet_before = Retrobot::Tweet.new.tap do |t|
+        t.text = '&gt;_&lt;'
+      end
+      tweet_after = filter.filter(tweet_before)
+      expect(tweet_after.text).to eq('>_<')
+    end
+  end
 end
