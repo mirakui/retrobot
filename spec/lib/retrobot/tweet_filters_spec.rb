@@ -15,7 +15,7 @@ describe Retrobot::TweetFilters do
   end
 
   describe 'AddInReplyToUrl#filter' do
-    subject(:filter_class) { Retrobot::TweetFilters::AddInReplyToUrl }
+    let(:filter_class) { Retrobot::TweetFilters::AddInReplyToUrl }
 
     it 'adds in_reply_to_url' do
       # https://twitter.com/mirakui/status/419483601634205696
@@ -29,7 +29,7 @@ describe Retrobot::TweetFilters do
   end
 
   describe 'RetroDays' do
-    subject(:filter_class) { Retrobot::TweetFilters::RetroDays }
+    let(:filter_class) { Retrobot::TweetFilters::RetroDays }
     let(:now) { Time.new(2014,01,01).localtime }
     let(:config) do
       Retrobot::Config.new retro_days: 365
@@ -51,6 +51,18 @@ describe Retrobot::TweetFilters do
         end
         expect(filter.filter(tweet_before)).to eq(tweet_before)
       end
+    end
+  end
+
+  describe 'RemoveAtmark' do
+    let(:filter_class) { Retrobot::TweetFilters::RemoveAtmark }
+
+    it 'removes atmark' do
+      tweet_before = Retrobot::Tweet.new.tap do |t|
+        t.text = '@mirakui_retro hello'
+      end
+      tweet_after = filter.filter(tweet_before)
+      expect(tweet_after.text).to eq('mirakui_retro hello')
     end
   end
 end
