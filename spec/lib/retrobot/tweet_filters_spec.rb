@@ -1,16 +1,17 @@
-require 'active_support/core_ext/object/blank'
-require 'retrobot/tweet_filters/add_in_reply_to_url'
+require 'retrobot/tweet_filters'
 require 'logger'
 
-describe Retrobot::TweetFilters::AddInReplyToUrl do
+describe Retrobot::TweetFilters do
   let(:retrobot) {
     double(:retrobot, logger: Logger.new('/dev/null'))
   }
 
-  describe '#filter' do
-    subject(:filter) { described_class.new(retrobot) }
+  let(:filter) { filter_class.new retrobot }
 
-    it do
+  describe 'AddInReplyToUrl#filter' do
+    subject(:filter_class) { Retrobot::TweetFilters::AddInReplyToUrl }
+
+    it 'adds in_reply_to_url' do
       # https://twitter.com/mirakui/status/419483601634205696
       tweet_before = Retrobot::Tweet.new.tap do |t|
         t.in_reply_to_status_id = 419483520973565952
