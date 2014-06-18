@@ -1,6 +1,7 @@
 # coding: utf-8
 require 'spec_helper'
 require 'timecop'
+require 'logger'
 require 'retrobot'
 require 'retrobot/config'
 
@@ -8,6 +9,7 @@ describe Retrobot do
   let(:retrobot) do
     Retrobot.new(nil).tap do |r|
       r.instance_variable_set('@config', config)
+      r.instance_variable_set('@logger', Logger.new('/dev/null'))
     end
   end
 
