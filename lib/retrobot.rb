@@ -3,6 +3,7 @@ require 'retrobot/config'
 require 'retrobot/tweet'
 require 'retrobot/tweet_filters'
 
+require 'active_support'
 require 'active_support/core_ext'
 require 'twitter'
 require 'retryable'
