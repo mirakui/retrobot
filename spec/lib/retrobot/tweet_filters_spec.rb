@@ -129,4 +129,17 @@ describe Retrobot::TweetFilters do
       end
     end
   end
+
+  describe 'Tweet' do
+    let(:filter_class) { Retrobot::TweetFilters::Tweet }
+
+    it 'tweets text' do
+      tweet_before = Retrobot::Tweet.new.tap do |t|
+        t.text = 'hello'
+      end
+      tweet_after = filter.filter(tweet_before)
+      expect(tweet_after).to be(nil)
+      expect(retrobot.client).to have_received(:update).with('hello')
+    end
+  end
 end
