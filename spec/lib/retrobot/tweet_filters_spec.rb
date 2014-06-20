@@ -142,4 +142,42 @@ describe Retrobot::TweetFilters do
       expect(retrobot.client).to have_received(:update).with('hello')
     end
   end
+
+  describe 'SuppressPattern' do
+    let(:filter_class) { Retrobot::TweetFilters::SuppressPattern }
+
+    context 'suppress_pattern == nil' do
+      it 'does nothing' do
+        tweet_before = Retrobot::Tweet.new.tap do |t|
+          t.text = 'hello'
+        end
+        tweet_after = filter.filter(tweet_before)
+        expect(tweet_after).to be(tweet_after)
+      end
+    end
+
+    context 'suppress_pattern is a regexp' do
+      let(:config) { Retrobot::Config.new suppress_pattern: '^@mirakui' }
+
+      describe 'does not match text' do
+        it 'does nothing' do
+          tweet_before = Retrobot::Tweet.new.tap do |t|
+            t.text = 'hello'
+          end
+          tweet_after = filter.filter(tweet_before)
+          expect(tweet_after).to be(tweet_after)
+        end
+      end
+
+      describe 'matches text' do
+        it 'skips' do
+          tweet_before = Retrobot::Tweet.new.tap do |t|
+            t.text = '@mirakui hello'
+          end
+          tweet_after = filter.filter(tweet_before)
+          expect(tweet_after).to be(nil)
+        end
+      end
+    end
+  end
 end

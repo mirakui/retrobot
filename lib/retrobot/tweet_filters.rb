@@ -5,6 +5,7 @@ require 'retrobot/tweet_filters/retweet'
 require 'retrobot/tweet_filters/tweet'
 require 'retrobot/tweet_filters/unescape'
 require 'retrobot/tweet_filters/add_in_reply_to_url'
+require 'retrobot/tweet_filters/suppress_pattern'
 
 class Retrobot
   module TweetFilters
