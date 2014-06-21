@@ -8,7 +8,8 @@ class Retrobot
       end
 
       def filter(tweet)
-        if pattern && tweet.text =~ pattern
+        text = text tweet
+        if pattern && text =~ pattern
           logger.info "Skipped by suppress_pattern: #{tweet.text}"
           nil
         else
@@ -19,6 +20,10 @@ class Retrobot
       private
       def pattern
         config.suppress_pattern ? Regexp.new(config.suppress_pattern) : nil
+      end
+
+      def text(tweet)
+        tweet.retweeted_status_id ? tweet.text.sub(/^RT @.+: /, '') : tweet.text
       end
     end
   end

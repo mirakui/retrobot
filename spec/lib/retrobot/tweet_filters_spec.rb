@@ -178,6 +178,30 @@ describe Retrobot::TweetFilters do
           expect(tweet_after).to be(nil)
         end
       end
+
+      context 'RT text' do
+        describe 'does not match text' do
+          it 'skips' do
+            tweet_before = Retrobot::Tweet.new.tap do |t|
+              t.retweeted_status_id = 12345
+              t.text = 'RT @mirakui: hello'
+            end
+            tweet_after = filter.filter(tweet_before)
+            expect(tweet_after).to be(tweet_after)
+          end
+        end
+
+        describe 'matches text' do
+          it 'skips' do
+            tweet_before = Retrobot::Tweet.new.tap do |t|
+              t.retweeted_status_id = 12345
+              t.text = 'RT @mirakui: @mirakui hello'
+            end
+            tweet_after = filter.filter(tweet_before)
+            expect(tweet_after).to be(nil)
+          end
+        end
+      end
     end
   end
 end
