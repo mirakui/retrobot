@@ -97,6 +97,7 @@ class Retrobot
     return @tweet_filters if @tweet_filters
     @tweet_filters = []
     @tweet_filters << TweetFilters::RetroDays.new(self)
+    @tweet_filters << TweetFilters::SuppressPattern.new(self) if @config.suppress_pattern
     @tweet_filters << TweetFilters::AddInReplyToUrl.new(self) if @config.add_in_reply_to_url
     @tweet_filters << TweetFilters::Retweet.new(self)
     @tweet_filters << TweetFilters::RemoveAtmark.new(self)

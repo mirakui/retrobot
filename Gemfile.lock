@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    retrobot (0.3.0)
+    retrobot (0.3.1)
       activesupport (~> 4.0)
       daemons
       get-twitter-oauth-token

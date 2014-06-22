@@ -18,6 +18,7 @@ class Retrobot
       retry_interval
       retry_count
       add_in_reply_to_url
+      suppress_pattern
     )
 
     DEFAULTS = {
@@ -29,7 +30,8 @@ class Retrobot
       loop_interval: 3,
       retry_interval: 3,
       retry_count: 5,
-      add_in_reply_to_url: false
+      add_in_reply_to_url: false,
+      suppress_pattern: nil,
     }
 
     def initialize(options={})

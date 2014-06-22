@@ -1,4 +1,8 @@
 # ChangeLog
+## 0.3.1
+- Add `suppress_pattern` option
+  - https://github.com/mirakui/retrobot/pull/9
+
 ## 0.3.0
 - Add `add_in_reply_to` option (Thanks @studio3104)
   - https://github.com/mirakui/retrobot/pull/7
