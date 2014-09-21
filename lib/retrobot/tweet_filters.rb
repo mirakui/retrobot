@@ -1,5 +1,6 @@
 require 'retrobot/tweet_filters/base'
 require 'retrobot/tweet_filters/remove_atmark'
+require 'retrobot/tweet_filters/remove_hashtag'
 require 'retrobot/tweet_filters/retro_days'
 require 'retrobot/tweet_filters/retweet'
 require 'retrobot/tweet_filters/tweet'

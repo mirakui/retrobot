@@ -19,6 +19,7 @@ class Retrobot
       retry_count
       add_in_reply_to_url
       suppress_pattern
+      remove_hashtag
     )
 
     DEFAULTS = {
@@ -32,6 +33,7 @@ class Retrobot
       retry_count: 5,
       add_in_reply_to_url: false,
       suppress_pattern: nil,
+      remove_hashtag: false,
     }
 
     def initialize(options={})
