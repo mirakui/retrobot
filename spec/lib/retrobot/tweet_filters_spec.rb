@@ -71,6 +71,34 @@ describe Retrobot::TweetFilters do
     end
   end
 
+  describe 'RemoveHashtag' do
+    let(:filter_class) { Retrobot::TweetFilters::RemoveHashtag}
+
+    context 'config.remove_hashtag is true' do
+      let(:config) { Retrobot::Config.new remove_hashtag: true }
+
+      it 'removes hashtag' do
+        tweet_before = Retrobot::Tweet.new.tap do |t|
+          t.text = '@mirakui_retro hello #hashtag nospace#hashtag2'
+        end
+        tweet_after = filter.filter(tweet_before)
+        expect(tweet_after.text).to eq('@mirakui_retro hello nospace')
+      end
+    end
+
+    context 'config.remove_hashtag is false' do
+      let(:config) { Retrobot::Config.new remove_hashtag: false}
+
+      it 'dose not removes hashtag' do
+        tweet_before = Retrobot::Tweet.new.tap do |t|
+          t.text = '@mirakui_retro hello #hashtag nospace#hashtag2'
+        end
+        tweet_after = filter.filter(tweet_before)
+        expect(tweet_after.text).to eq('@mirakui_retro hello #hashtag nospace#hashtag2')
+      end
+    end
+  end
+
   describe 'Unescape' do
     let(:filter_class) { Retrobot::TweetFilters::Unescape }
 
