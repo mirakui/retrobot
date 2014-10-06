@@ -1,4 +1,8 @@
 # ChangeLog
+## 0.3.2
+- Add `remove_hashtag` option (Thanks @kenjiskywalker)
+  - https://github.com/mirakui/retrobot/pull/10
+
 ## 0.3.1
 - Add `suppress_pattern` option
   - https://github.com/mirakui/retrobot/pull/9
