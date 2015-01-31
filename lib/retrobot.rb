@@ -61,20 +61,43 @@ class Retrobot
         break;
       end
     end
-    csv.slice! last_index..-1
-    logger.info "Next update: \"#{csv.last[5]}\" at #{@config.retro_days.since(Time.parse(csv.last[3]))}"
+    csv.slice! last_index..-1 if last_index
+    if csv.empty?
+      logger.fatal "No data is left. Please update the tweets.csv"
+      false
+    else
+      logger.info "Next update: \"#{csv.last[5]}\" at #{@config.retro_days.since(Time.parse(csv.last[3]))}"
+      true
+    end
   end
 
   def tweet_loop
     logger.info 'start'
     loop do
       line = csv.last
+      unless line
+        dying_message
+        return false
+      end
       if process_line(line)
         csv.pop
       end
       sleep @config.loop_interval
       logger.debug '.'
     end
+    true
+  end
+
+  def dying_message
+    message = "No data is left. Please update my tweets.csv. Pee.. Gaa..."
+    tweet_text = if mention = @config.dying_mention_to
+                   "#{mention} #{message}"
+                 else
+                   message
+                 end
+    twitter = TweetFilters::Tweet.new(self)
+    twitter.tweet(tweet_text)
+    logger.fatal message
   end
 
   def process_line(line)
@@ -139,8 +162,8 @@ class Retrobot
 
   def main
     init_configuration
-    init_csv
-    tweet_loop
+    exit 1 unless init_csv
+    exit 1 unless tweet_loop
   end
 
   private

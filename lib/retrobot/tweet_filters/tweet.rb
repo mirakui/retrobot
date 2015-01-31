@@ -12,7 +12,6 @@ class Retrobot
         tweet tweet.text
       end
 
-      private
       def tweet(text)
         logger.info "tweet: #{text}"
         return if config.dryrun
