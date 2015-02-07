@@ -88,5 +88,20 @@ describe Retrobot do
         end
       end
     end
+
+    context "no data left" do
+      before do
+        allow(retrobot).to receive(:csv).and_return([]) # empty
+      end
+
+      it 'shoud exit if no data left on starting up' do
+        expect(retrobot.init_csv).to be false
+      end
+
+      it 'should tweet a dying message and exit if no data left on tweet_loop' do
+        expect(client).to receive(:update)
+        expect(retrobot.tweet_loop).to be false
+      end
+    end
   end
 end
