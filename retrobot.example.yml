@@ -10,4 +10,4 @@ access_secret: your_access_secret
 # add_in_reply_to_url: false (default=false / add url of in_reply_to into the tweet)
 # remove_hashtag: false (default=false / remove hashtag the tweet)
 # suppress_pattern: '@\w+' (default=nil / regular expression for tweet text which you don't need to tweet)
-# dying_mention_to: @mirakui (default=nil / send dying message as mention to this person if tweets.csv doesn't have tweets anymore)
+# dying_mention_to: '@mirakui' (default=nil / send dying message as mention to this person if tweets.csv doesn't have tweets anymore)
