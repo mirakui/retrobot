@@ -1,4 +1,7 @@
 # ChangeLog
+## 0.3.3
+- Bug fix: error with retryable-2.0.0 (Thanks @hansode)
+
 ## 0.3.2
 - Add `remove_hashtag` option (Thanks @kenjiskywalker)
   - https://github.com/mirakui/retrobot/pull/10

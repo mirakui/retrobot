@@ -25,7 +25,7 @@ class Retrobot
       def retweet(status_id, text=nil)
         logger.info "retweet: #{status_id} \"#{text}\""
         return if config.dryrun
-        retryable(tries: config.retry_count, sleep: config.retry_interval) do
+        Retryable.retryable(tries: config.retry_count, sleep: config.retry_interval) do
           client.retweet status_id
         end
       end
