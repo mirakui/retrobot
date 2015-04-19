@@ -1,4 +1,7 @@
 # ChangeLog
+## 0.3.5
+- Show retrobot version on booting
+
 ## 0.3.4
 - Flush stdout automatically
 
