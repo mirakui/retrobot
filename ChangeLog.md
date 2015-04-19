@@ -1,4 +1,7 @@
 # ChangeLog
+## 0.3.4
+- Flush stdout automatically
+
 ## 0.3.3
 - Add dying_message feature and `dying_mention_to` option (Thanks @sonots)
 - Bug fix: error with retryable-2.0.0 (Thanks @hansode)
