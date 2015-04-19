@@ -162,6 +162,7 @@ class Retrobot
 
   def main
     init_configuration
+    logger.info "Starting retrobot-#{Retrobot::VERSION}"
     exit 1 unless init_csv
     exit 1 unless tweet_loop
   end
