@@ -9,4 +9,5 @@ rescue LoadError
   retry
 end
 
+$stdout.sync = true
 Retrobot.new(ARGV).main
