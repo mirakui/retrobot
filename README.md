@@ -69,4 +69,4 @@ $ bin/retrobotctl [start|stop] -- -c /path/to/retrobot.yml
 ```
 
 ## License
-Copyright (c) 2014 Issei Naruta. Retrobot is released under the MIT License.
+Copyright (c) 2016 Issei Naruta. Retrobot is released under the MIT License.
