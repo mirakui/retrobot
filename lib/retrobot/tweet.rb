@@ -3,10 +3,10 @@ require 'time'
 class Retrobot
   class Tweet
     attr_accessor :tweet_id, :in_reply_to_status_id, :in_reply_to_user_id, :timestamp, :source, :text,
-      :retweeted_status_id, :retweeted_status_user_id, :retweeted_status_timestamp, :expanded_urls
+                  :retweeted_status_id, :retweeted_status_user_id, :retweeted_status_timestamp, :expanded_urls
 
     def self.parse_line(cols)
-      t = self.new
+      t = new
       t.tweet_id = str_to_int_or_nil(cols[0])
       t.in_reply_to_status_id = str_to_int_or_nil(cols[1])
       t.in_reply_to_user_id = str_to_int_or_nil(cols[2])

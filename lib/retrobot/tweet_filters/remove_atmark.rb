@@ -8,7 +8,7 @@ class Retrobot
       end
 
       def filter(tweet)
-        tweet.text.gsub! '@', ''
+        tweet.text.delete! '@'
         tweet
       end
     end
