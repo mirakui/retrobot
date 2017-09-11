@@ -6,7 +6,7 @@ require 'retrobot/tweet_filters/base'
 class Retrobot
   module TweetFilters
     class AddInReplyToUrl < Base
-      TWITTER_BASE_URL = 'https://twitter.com'
+      TWITTER_BASE_URL = 'https://twitter.com'.freeze
 
       def initialize(retrobot)
         super
@@ -22,6 +22,7 @@ class Retrobot
       end
 
       private
+
       def http_twitter
         uri = URI.parse(TWITTER_BASE_URL)
         http = Net::HTTP.new(uri.host, uri.port)

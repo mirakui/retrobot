@@ -15,7 +15,6 @@ require 'optparse'
 require 'cgi'
 
 class Retrobot
-
   GEM_ROOT = Pathname.new('..').expand_path(__dir__)
 
   attr_reader :config
@@ -26,11 +25,11 @@ class Retrobot
 
   def client
     @client ||= Twitter::REST::Client.new do |config|
-                  config.consumer_key = @config.consumer_key
-                  config.consumer_secret = @config.consumer_secret
-                  config.access_token = @config.access_token
-                  config.access_token_secret = @config.access_secret
-                end
+      config.consumer_key = @config.consumer_key
+      config.consumer_secret = @config.consumer_secret
+      config.access_token = @config.access_token
+      config.access_token_secret = @config.access_secret
+    end
   end
 
   def logger
@@ -45,7 +44,7 @@ class Retrobot
     @csv ||= begin
                tweets_csv = file_from_candidates(
                  @config.tweets_csv,
-                 GEM_ROOT.join('tweets', 'tweets.csv'),
+                 GEM_ROOT.join('tweets', 'tweets.csv')
                )
                CSV.parse File.read(tweets_csv)
              end
@@ -58,12 +57,12 @@ class Retrobot
       time = Time.parse line[3]
       if time < @config.retro_days.ago
         last_index = i
-        break;
+        break
       end
     end
     csv.slice! last_index..-1 if last_index
     if csv.empty?
-      logger.fatal "No data is left. Please update the tweets.csv"
+      logger.fatal 'No data is left. Please update the tweets.csv'
       false
     else
       logger.info "Next update: \"#{csv.last[5]}\" at #{@config.retro_days.since(Time.parse(csv.last[3]))}"
@@ -79,9 +78,7 @@ class Retrobot
         dying_message
         return false
       end
-      if process_line(line)
-        csv.pop
-      end
+      csv.pop if process_line(line)
       sleep @config.loop_interval
       logger.debug '.'
     end
@@ -89,7 +86,7 @@ class Retrobot
   end
 
   def dying_message
-    message = "No data is left. Please update my tweets.csv. Pee.. Gaa..."
+    message = 'No data is left. Please update my tweets.csv. Pee.. Gaa...'
     tweet_text = if mention = @config.dying_mention_to
                    "#{mention} #{message}"
                  else
@@ -110,7 +107,7 @@ class Retrobot
 
     true
   rescue Twitter::Error
-    logger.error "#{$!} (#{$!.class})\n  #{$@.join("\n  ")}"
+    logger.error "#{$ERROR_INFO} (#{$ERROR_INFO.class})\n  #{$ERROR_POSITION.join("\n  ")}"
     true
   rescue Retrobot::TweetFilters::RetryLater
     false
@@ -131,7 +128,7 @@ class Retrobot
   end
 
   def init_configuration
-    options = parse_options()
+    options = parse_options
     @config = Config.new
 
     config_yml = file_from_candidates(
@@ -149,12 +146,12 @@ class Retrobot
     options = {}
 
     opt = OptionParser.new @argv
-    opt.banner = "Usage: #{$0} [OPTIONS]"
-    opt.on('--debug') { options[:debug] =  true }
+    opt.banner = "Usage: #{$PROGRAM_NAME} [OPTIONS]"
+    opt.on('--debug') { options[:debug] = true }
     opt.on('--dryrun') { options[:dryrun] = true }
-    opt.on('--config file') {|v| options[:config] = v }
-    opt.on('--retro-days days') {|v| options[:retro_days] = v }
-    opt.on('--tweets-csv path') {|v| options[:tweets_csv] = v }
+    opt.on('--config file') { |v| options[:config] = v }
+    opt.on('--retro-days days') { |v| options[:retro_days] = v }
+    opt.on('--tweets-csv path') { |v| options[:tweets_csv] = v }
     opt.parse!
 
     options
@@ -170,7 +167,7 @@ class Retrobot
   private
 
   def file_from_candidates(*candidates)
-    path = candidates.find { |f| f && File.exists?(f.to_s) }
+    path = candidates.find { |f| f && File.exist?(f.to_s) }
     path && path.to_s
   end
 end

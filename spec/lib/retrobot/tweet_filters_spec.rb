@@ -5,13 +5,12 @@ require 'logger'
 require 'timecop'
 
 describe Retrobot::TweetFilters do
-  let(:retrobot) {
+  let(:retrobot) do
     double(:retrobot,
            logger: Logger.new('/dev/null'),
            config: config,
-           client: client
-          )
-  }
+           client: client)
+  end
 
   let(:client) { double('client', retweet: nil, update: nil) }
   let(:filter) { filter_class.new retrobot }
@@ -25,7 +24,7 @@ describe Retrobot::TweetFilters do
     it 'adds in_reply_to_url' do
       # https://twitter.com/mirakui/status/419483601634205696
       tweet_before = Retrobot::Tweet.new.tap do |t|
-        t.in_reply_to_status_id = 419483520973565952
+        t.in_reply_to_status_id = 419_483_520_973_565_952
         t.text = '@mirakui_retro おめでとうございます'
       end
       tweet_after = filter.filter tweet_before
@@ -35,7 +34,7 @@ describe Retrobot::TweetFilters do
 
   describe 'RetroDays' do
     let(:filter_class) { Retrobot::TweetFilters::RetroDays }
-    let(:now) { Time.new(2014,01,01).localtime }
+    let(:now) { Time.new(2014, 0o1, 0o1).localtime }
     let(:config) do
       Retrobot::Config.new retro_days: 365
     end
@@ -45,7 +44,7 @@ describe Retrobot::TweetFilters do
         tweet_before = Retrobot::Tweet.new.tap do |t|
           t.timestamp = now - 364.days
         end
-        expect{ filter.filter(tweet_before) }.to raise_error(Retrobot::TweetFilters::RetryLater)
+        expect { filter.filter(tweet_before) }.to raise_error(Retrobot::TweetFilters::RetryLater)
       end
     end
 
@@ -72,7 +71,7 @@ describe Retrobot::TweetFilters do
   end
 
   describe 'RemoveHashtag' do
-    let(:filter_class) { Retrobot::TweetFilters::RemoveHashtag}
+    let(:filter_class) { Retrobot::TweetFilters::RemoveHashtag }
 
     context 'config.remove_hashtag is true' do
       let(:config) { Retrobot::Config.new remove_hashtag: true }
@@ -87,7 +86,7 @@ describe Retrobot::TweetFilters do
     end
 
     context 'config.remove_hashtag is false' do
-      let(:config) { Retrobot::Config.new remove_hashtag: false}
+      let(:config) { Retrobot::Config.new remove_hashtag: false }
 
       it 'dose not removes hashtag' do
         tweet_before = Retrobot::Tweet.new.tap do |t|
@@ -117,7 +116,7 @@ describe Retrobot::TweetFilters do
     context 'retweeted_status_id is present' do
       let(:tweet_before) do
         Retrobot::Tweet.new.tap do |t|
-          t.retweeted_status_id = 123456
+          t.retweeted_status_id = 123_456
         end
       end
 
@@ -127,7 +126,7 @@ describe Retrobot::TweetFilters do
         it 'retweets' do
           tweet_after = filter.filter(tweet_before)
           expect(tweet_after).to be(nil)
-          expect(retrobot.client).to have_received(:retweet).with(123456)
+          expect(retrobot.client).to have_received(:retweet).with(123_456)
         end
       end
 
@@ -211,7 +210,7 @@ describe Retrobot::TweetFilters do
         describe 'does not match text' do
           it 'skips' do
             tweet_before = Retrobot::Tweet.new.tap do |t|
-              t.retweeted_status_id = 12345
+              t.retweeted_status_id = 12_345
               t.text = 'RT @mirakui: hello'
             end
             tweet_after = filter.filter(tweet_before)
@@ -222,7 +221,7 @@ describe Retrobot::TweetFilters do
         describe 'matches text' do
           it 'skips' do
             tweet_before = Retrobot::Tweet.new.tap do |t|
-              t.retweeted_status_id = 12345
+              t.retweeted_status_id = 12_345
               t.text = 'RT @mirakui: @mirakui hello'
             end
             tweet_after = filter.filter(tweet_before)

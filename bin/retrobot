@@ -5,7 +5,7 @@ begin
 rescue LoadError
   raise if retried
   retried = true
-  $:.unshift "#{__dir__}/../lib"
+  $LOAD_PATH.unshift "#{__dir__}/../lib"
   retry
 end
 
